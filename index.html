@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title></title>
+<style type="text/css">
+#ran{
+	float: left;
+	margin-left: 20px;
+}
+#myCanv{
+
+	float: left;
+}
+</style>
+</head>
+
+<body>
+
+<canvas width="600" height="600" id="myCanv"></canvas>
+<div id="ran" style="font-size:20px"></div>
+
+<script type="text/javascript">
+
+
+function App(canvas) {
+	this.height = canvas.height; 
+	this.width = canvas.width;
+	this.ctx = canvas.getContext('2d');
+	this.ctx.fillStyle = "#000000";
+	this.ctx.fillRect(0, 0, this.width, this.height);
+	this.ctx.fillStyle = "#FFFFFF";
+	this.direction = [ 
+						{ x: 0, y: 1},
+						{ x: 0, y:-1},
+						{ x: 1, y: 0},
+						{ x: -1, y:-1},
+						{ x: 1, y: 1},
+						{ x: 1, y: -1},
+						{ x: -1, y:0},
+						{ x: -1, y:1},
+				];
+	this.x = 0;
+	this.y = 0;
+	this.pointSize = 1;
+	this.timeout = 1;
+} 
+
+App.prototype.getRandom = function (min, max) {
+	return Math.floor(Math.random() * ( max - min ) + min);
+};
+
+App.prototype.insertPoint = function (x, y) {
+	if(x > this.width || y > this.height)
+		return false;
+	this.ctx.fillRect(x, y, this.pointSize, this.pointSize);
+	return true;
+};
+
+App.prototype.render = function(){
+	return this.insertPoint(this.x, this.y);
+}
+
+App.prototype.setStartPoint = function(x, y) {
+	if(x > this.width || y > this.height)
+		return false;
+	this.x = x; this.y = y;
+	return true;
+};
+
+App.prototype.onNewFram = function() {};
+
+App.prototype.start = function() {
+	setInterval(function(ob){
+		var i;
+		i = ob.getRandom(0, 8);
+		ob.x += ob.direction[i].x * ob.pointSize;
+		ob.y += ob.direction[i].y * ob.pointSize;
+		ob.render();
+		ob.onNewFram(i);
+	},this.timeout, this);
+};
+
+App.prototype.pause = function() {
+
+};
+/***********************************************/
+
+var a = new App(document.getElementById('myCanv'));
+a.setStartPoint(300, 300);
+
+var frenq = [0, 0, 0, 0 ,0 ,0 ,0, 0];
+a.onNewFram = function(j){
+	function printAll(ar){
+		document.getElementById('ran').innerHTML = '';
+		for(i = 0; i < ar.length; i++)
+		{
+			document.getElementById('ran').innerHTML += i + ' : '+ ar[i]+"<br/>";
+		}
+	}
+	frenq[j] += 1;
+	printAll(frenq);
+
+};
+a.start();
+
+</script>
+</body>
+</html>
